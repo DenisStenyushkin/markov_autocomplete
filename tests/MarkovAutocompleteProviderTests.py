@@ -36,7 +36,8 @@ class MarkovAutocompleteProvider_provide_tests(unittest.TestCase):
 
     def setUp(self):
         self.provider = MarkovAutocompleteProvider()
-        self.provider.distribution = {"fish": {"raw": 1, "read": 3, "red": 6, "foo": 1}}
+        self.provider.distribution = {"red": {"fish": 3},
+                                      "fish": {"raw": 1, "read": 3, "red": 6, "foo": 1}}
 
     def test_provides_for_prefix_and_freq(self):
         suggestions = self.provider.provide("fish", "r", 0.25)
@@ -53,3 +54,15 @@ class MarkovAutocompleteProvider_provide_tests(unittest.TestCase):
     def test_provides_for_base_word_only(self):
         suggestions = self.provider.provide("fish")
         self.assertTupleEqual(suggestions, ("red", "read", "raw", "foo"))
+
+    def test_empty_for_unknown_base(self):
+        suggestions = self.provider.provide("qwerty")
+        self.assertTupleEqual(suggestions, ())
+
+    def test_handles_huge_min_freq(self):
+        suggestions = self.provider.provide("red", "f", 100)
+        self.assertTupleEqual(suggestions, ("fish",))
+
+    def test_empty_for_unknown_prefix(self):
+        suggestions = self.provider.provide("fish", "a")
+        self.assertTupleEqual(suggestions, ())

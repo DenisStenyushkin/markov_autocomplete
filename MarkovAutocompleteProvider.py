@@ -49,7 +49,7 @@ class MarkovAutocompleteProvider(object):
         counts = self.distribution[base_word]
         min_freq = min(min_freq, 1)
         total_count = sum(counts.values())
-        min_count = min_freq * total_count
+        min_count = round(min_freq * total_count)
 
         counts = {key: value for key, value in counts.items()
                   if key.startswith(prefix) and value >= min_count}
