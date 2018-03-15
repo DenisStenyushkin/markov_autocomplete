@@ -1,4 +1,6 @@
 """
+Provides MarkovAutocompleteProvider class
+that utilises Markov model to provide autocomplete suggestions
 """
 
 class MarkovAutocompleteProvider(object):
@@ -56,3 +58,17 @@ class MarkovAutocompleteProvider(object):
         suggestions = sorted(counts.items(), key=lambda i: i[1], reverse=True)
 
         return tuple(s[0] for s in suggestions)
+
+    def fit(self, corpus, tokeniser):
+        """ Fits the provider's Markov model to provided text corpus
+
+        Args:
+            corpus (iterable of str): text corpus to fit the provider to
+            tokeniser (callable): a callable that performs tokenisation
+                must accept a str parameter as a source string and return a list of str
+                as a sequence of extracted tokens
+        """
+        for text in corpus:
+            tokens = tokeniser(text)
+            for i, _ in enumerate(tokens[:-1]):
+                self.update(tokens[i], tokens[i+1])
