@@ -2,6 +2,7 @@
 
 import unittest
 from MarkovAutocompleteProvider import MarkovAutocompleteProvider
+from tokeniser import tokenize
 
 class MarkovAutocompleteProvider_update_tests(unittest.TestCase):
     """Test suite for update method"""
@@ -66,3 +67,17 @@ class MarkovAutocompleteProvider_provide_tests(unittest.TestCase):
     def test_empty_for_unknown_prefix(self):
         suggestions = self.provider.provide("fish", "a")
         self.assertTupleEqual(suggestions, ())
+
+class MarkovAutocompleteProvider_fit_tests(unittest.TestCase):
+    """Test suite for fit method"""
+
+    def test_handles_corpus(self):
+        provider = MarkovAutocompleteProvider()
+        corpus = ["harry is a good boy", "london is interesting", "harry potter is a wizard"]
+        provider.fit(corpus, tokenize)
+        self.assertDictEqual(provider.distribution, {"harry": {"is": 1, "potter": 1},
+                                                     "is": {"a": 2, "interesting": 1},
+                                                     "a": {"good": 1, "wizard": 1},
+                                                     "good": {"boy": 1},
+                                                     "london": {"is": 1},
+                                                     "potter": {"is": 1}})
