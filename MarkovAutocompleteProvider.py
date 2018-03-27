@@ -3,7 +3,11 @@ Provides MarkovAutocompleteProvider class
 that utilises Markov model to provide autocomplete suggestions
 """
 
+import pickle
+
 class MarkovAutocompleteProvider(object):
+    MODEL_FILE_NAME = "model.dat"
+
     """
     Word autocomplete provider based on first-order Markov model
     """
@@ -72,3 +76,13 @@ class MarkovAutocompleteProvider(object):
             tokens = tokeniser(text)
             for i, _ in enumerate(tokens[:-1]):
                 self.update(tokens[i], tokens[i+1])
+
+    def save(self):
+        """ Saves the provider's Markov model to disk """
+        with open(self.MODEL_FILE_NAME, "wb") as f:
+            pickle.dump(self.distribution, f)
+
+    def load(self):
+        """ Loads th provider's Markov model from disk """
+        with open(self.MODEL_FILE_NAME, "rb") as f:
+            self.distribution = pickle.load(f)
